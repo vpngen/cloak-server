@@ -1,0 +1,26 @@
+name: "cloak-server"
+arch: "all"
+platform: "linux"
+version: ${PACKAGE_VERSION}
+section: "default"
+priority: "optional"
+release: ${PACKAGE_RELEASE}
+
+provides:
+- cloak-server
+
+maintainer: "Ingmund Ollson <ingmund@proton.me>"
+description: VPNGen Cloak Server
+vendor: "VPNGen"
+homepage: "http://vpngen.org"
+
+contents:
+- src: bin/ck-server
+  dst: /usr/sbin/ck-server
+  file_info:
+    mode: 0555
+    owner: root
+    group: root
+
+deb:
+  compression: xz
