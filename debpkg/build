@@ -89,7 +89,7 @@ if [ "$1" = "pkg" ]; then
 
         git clone -b "${BRANCH}" ssh://git@github.com/vpngen/cloak-server
         
-        go build -C cloack-server/cmd/ck-server -o ../../../bin/ck-server
+        go build -C cloak-server/cmd/ck-server -o ../../../bin/ck-server
 
         go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
 
