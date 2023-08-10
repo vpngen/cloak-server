@@ -2,7 +2,7 @@
 
 export SHARED_BASE="/data"
 
-constract_version () {
+construct_version () {
         repo_path=$1
 
         # Check if the current branch is the same as the branch to build
@@ -86,6 +86,10 @@ if [ "$1" = "pkg" ]; then
         ssh-keyscan -t ed25519 github.com >> /etc/ssh/ssh_known_hosts
 
         git config --global url."ssh://git@github.com/".insteadOf "https://github.com/"
+
+        git clone -b "${BRANCH}" ssh://git@github.com/vpngen/cloak-server
+
+        construct_version "cloak-server"
 
         git clone ssh://git@github.com/cbeuw/Cloak
         
