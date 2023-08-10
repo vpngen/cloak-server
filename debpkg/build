@@ -87,9 +87,9 @@ if [ "$1" = "pkg" ]; then
 
         git config --global url."ssh://git@github.com/".insteadOf "https://github.com/"
 
-        git clone ssh://git@github.com/vpngen/cloak-server
+        git clone ssh://git@github.com/cbeuw/Cloak
         
-        go build -C cloak-server/cmd/ck-server -o ../../../bin/ck-server
+        go build -C Cloak/cmd/ck-server -o ../../../bin/ck-server
 
         go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
 
