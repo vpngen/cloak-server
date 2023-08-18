@@ -1,5 +1,5 @@
---- internal/server/dispatcher.go.orig	2023-08-18 14:03:42.584055386 +0300
-+++ internal/server/dispatcher.go	2023-08-18 14:04:31.506901542 +0300
+--- Cloak/internal/server/dispatcher.go.orig	2023-08-18 14:03:42.584055386 +0300
++++ Cloak/internal/server/dispatcher.go	2023-08-18 14:04:31.506901542 +0300
 @@ -262,6 +262,7 @@ func dispatchConnection(conn net.Conn, s
  		log.WithFields(log.Fields{
  			"UID":       b64(ci.UID),
