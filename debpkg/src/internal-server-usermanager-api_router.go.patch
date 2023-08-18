@@ -13,27 +13,27 @@
  	}
  
 +        if uinfo.SessionsCap == nil || *uinfo.SessionsCap == 0 {
-+                *uinfo.SessionsCap = 1
++                uinfo.SessionsCap = JustInt32(1)
 +        }
 +
 +        if uinfo.UpRate == nil || *uinfo.UpRate == 0 {
-+                *uinfo.UpRate = math.MaxInt64
++                uinfo.UpRate = JustInt64(math.MaxInt64)
 +        }
 +
 +        if uinfo.DownRate == nil || *uinfo.DownRate == 0 {
-+                *uinfo.DownRate = math.MaxInt64
++                uinfo.DownRate = JustInt64(math.MaxInt64)
 +        }
 +
 +        if uinfo.UpCredit == nil || *uinfo.UpCredit == 0 {
-+                *uinfo.UpCredit = math.MaxInt64
++                uinfo.UpCredit = JustInt64(math.MaxInt64)
 +        }
 +
 +        if uinfo.DownCredit == nil || *uinfo.DownCredit == 0 {
-+                *uinfo.DownCredit = math.MaxInt64
++                uinfo.DownCredit = JustInt64(math.MaxInt64)
 +        }
 +
 +        if uinfo.ExpiryTime == nil || *uinfo.ExpiryTime == 0 {
-+                *uinfo.ExpiryTime = math.MaxInt64
++                uinfo.ExpiryTime = JustInt64(math.MaxInt64)
 +        }
 +
  	err = ar.manager.WriteUserInfo(uinfo)
