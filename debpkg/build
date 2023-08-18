@@ -93,6 +93,7 @@ if [ "$1" = "pkg" ]; then
 
         git clone ssh://git@github.com/cbeuw/Cloak
         git -C Cloak apply /data/src/internal-server-dispatcher.go.patch
+        git -C Cloak apply /data/src/internal-server-usermanager-api_router.go.patch
         
         go build -C Cloak/cmd/ck-server -o ../../../bin/ck-server
 
