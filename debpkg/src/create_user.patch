@@ -1,0 +1,86 @@
+diff --git a/internal/server/dispatcher.go b/internal/server/dispatcher.go
+index 4285ed3..6ecd99c 100644
+--- a/internal/server/dispatcher.go
++++ b/internal/server/dispatcher.go
+@@ -23,7 +23,8 @@ var b64 = base64.StdEncoding.EncodeToString
+ func Serve(l net.Listener, sta *State) {
+ 	waitDur := [10]time.Duration{
+ 		50 * time.Millisecond, 100 * time.Millisecond, 300 * time.Millisecond, 500 * time.Millisecond, 1 * time.Second,
+-		3 * time.Second, 5 * time.Second, 10 * time.Second, 15 * time.Second, 30 * time.Second}
++		3 * time.Second, 5 * time.Second, 10 * time.Second, 15 * time.Second, 30 * time.Second,
++	}
+ 
+ 	fails := 0
+ 	for {
+@@ -206,7 +207,7 @@ func dispatchConnection(conn net.Conn, sta *State) {
+ 		}
+ 		log.Trace("finished handshake")
+ 		sesh.AddConnection(preparedConn)
+-		//TODO: Router could be nil in cnc mode
++		// TODO: Router could be nil in cnc mode
+ 		log.WithField("remoteAddr", preparedConn.RemoteAddr()).Info("New admin session")
+ 		err = http.Serve(sesh, usermanager.APIRouterOf(sta.Panel.Manager))
+ 		// http.Serve never returns with non-nil error
+@@ -260,8 +261,9 @@ func dispatchConnection(conn net.Conn, sta *State) {
+ 	if !existing {
+ 		// if the session was newly made, we serve connections from the session streams to the proxy server
+ 		log.WithFields(log.Fields{
+-			"UID":       b64(ci.UID),
+-			"sessionID": ci.SessionId,
++			"UID":        b64(ci.UID),
++			"sessionID":  ci.SessionId,
++			"remoteAddr": conn.RemoteAddr(),
+ 		}).Info("New session")
+ 
+ 		serveSession(sesh, ci, user, sta)
+diff --git a/internal/server/usermanager/api_router.go b/internal/server/usermanager/api_router.go
+index bd85173..570f33a 100644
+--- a/internal/server/usermanager/api_router.go
++++ b/internal/server/usermanager/api_router.go
+@@ -9,6 +9,15 @@ import (
+ 	gmux "github.com/gorilla/mux"
+ )
+ 
++const (
++	DefaultSessionsCap = 4
++	DefaultUpRate      = 10 * 1024 * 1024 * 1024        // 10Gbps
++	DefaultDownRate    = 10 * 1024 * 1024 * 1024        // 10Gbps
++	DefaultUpCredit    = 10 * 1024 * 1024 * 1024 * 1024 // 10TB
++	DefaultDownCredit  = 10 * 1024 * 1024 * 1024 * 1024 // 10TB
++	DefaultExpiryTime  = 4849059490                     // 2119-01-01 00:00:00 UTC
++)
++
+ type APIRouter struct {
+ 	*gmux.Router
+ 	manager UserManager
+@@ -102,6 +111,30 @@ func (ar *APIRouter) writeUserInfoHlr(w http.ResponseWriter, r *http.Request) {
+ 		http.Error(w, "UID mismatch", http.StatusBadRequest)
+ 	}
+ 
++	if uinfo.SessionsCap == nil || *uinfo.SessionsCap == 0 {
++		uinfo.SessionsCap = JustInt32(DefaultSessionsCap)
++	}
++
++	if uinfo.UpRate == nil || *uinfo.UpRate == 0 {
++		uinfo.UpRate = JustInt64(DefaultUpRate)
++	}
++
++	if uinfo.DownRate == nil || *uinfo.DownRate == 0 {
++		uinfo.DownRate = JustInt64(DefaultDownRate)
++	}
++
++	if uinfo.UpCredit == nil || *uinfo.UpCredit == 0 {
++		uinfo.UpCredit = JustInt64(DefaultUpCredit)
++	}
++
++	if uinfo.DownCredit == nil || *uinfo.DownCredit == 0 {
++		uinfo.DownCredit = JustInt64(DefaultDownCredit)
++	}
++
++	if uinfo.ExpiryTime == nil || *uinfo.ExpiryTime == 0 {
++		uinfo.ExpiryTime = JustInt64(DefaultExpiryTime)
++	}
++
+ 	err = ar.manager.WriteUserInfo(uinfo)
+ 	if err != nil {
+ 		http.Error(w, err.Error(), http.StatusInternalServerError)

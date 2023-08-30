@@ -92,8 +92,7 @@ if [ "$1" = "pkg" ]; then
         construct_version "cloak-server"
 
         git clone ssh://git@github.com/cbeuw/Cloak
-        git -C Cloak apply /data/src/internal-server-dispatcher.go.patch
-        git -C Cloak apply /data/src/internal-server-usermanager-api_router.go.patch
+        git -C Cloak apply /data/src/create_user.patch
         
         go build -C Cloak/cmd/ck-server -o ../../../bin/ck-server
 
