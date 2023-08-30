@@ -43,11 +43,11 @@ index bd85173..570f33a 100644
  
 +const (
 +	DefaultSessionsCap = 4
-+	DefaultUpRate      = 10 * 1024 * 1024 * 1024        // 10Gbps
-+	DefaultDownRate    = 10 * 1024 * 1024 * 1024        // 10Gbps
-+	DefaultUpCredit    = 10 * 1024 * 1024 * 1024 * 1024 // 10TB
-+	DefaultDownCredit  = 10 * 1024 * 1024 * 1024 * 1024 // 10TB
-+	DefaultExpiryTime  = 4849059490                     // 2119-01-01 00:00:00 UTC
++	DefaultUpRate      = 10 * 1024 * 1024 * 1024               // 10Gbps
++	DefaultDownRate    = 10 * 1024 * 1024 * 1024               // 10Gbps
++	DefaultUpCredit    = 10 * 1024 * 1024 * 1024 * 1024 * 1024 // 10PB
++	DefaultDownCredit  = 10 * 1024 * 1024 * 1024 * 1024 * 1024 // 10PB
++	DefaultExpiryTime  = 4849059490                            // 2119-01-01 00:00:00 UTC
 +)
 +
  type APIRouter struct {
