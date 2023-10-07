@@ -83,7 +83,7 @@ if [ "$1" = "pkg" ]; then
                 exit 1
         fi
 
-        git config credential.helper "!f() { test \"$1\" = get && echo \"username=\\\"${GIT_USER}\\\"\"; echo \"password=\\\"${GIT_PASSWORD}\\\"\"; }; f"
+        git config --global credential.helper "!f() { test \"$1\" = get && echo \"username=\\\"${GIT_USER}\\\"\"; echo \"password=\\\"${GIT_PASSWORD}\\\"\"; }; f"
 
         git clone -b "${BRANCH}" https://github.com/vpngen/cloak-server
 
