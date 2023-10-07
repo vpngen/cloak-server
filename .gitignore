@@ -3,5 +3,3 @@
 *.log
 vendor
 dist
-.new
-.legacy
