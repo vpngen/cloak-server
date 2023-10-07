@@ -75,23 +75,21 @@ if [ "$1" = "pkg" ]; then
         export BRANCH="${BRANCH}"
         export VERMETADATA="${VERMETADATA}"
         export CGO_ENABLED=0
+        export GIT_USER="${GIT_USER}"
+        export GIT_PASSWORD="${GIT_PASSWORD}"
 
         if [ -z "${BRANCH}" ]; then
                 echo "No branch specified"
                 exit 1
         fi
 
-        ssh-keyscan -t rsa github.com >> /etc/ssh/ssh_known_hosts
-        ssh-keyscan -t ecdsa github.com >> /etc/ssh/ssh_known_hosts
-        ssh-keyscan -t ed25519 github.com >> /etc/ssh/ssh_known_hosts
+        git config --global credential.helper "!f() { echo \"username=${GIT_USER}\"; echo \"password=${GIT_PASSWORD}\"; }; f"
 
-        git config --global url."ssh://git@github.com/".insteadOf "https://github.com/"
-
-        git clone -b "${BRANCH}" ssh://git@github.com/vpngen/cloak-server
+        git clone -b "${BRANCH}" https://github.com/vpngen/cloak-server
 
         construct_version "cloak-server"
 
-        git clone ssh://git@github.com/cbeuw/Cloak
+        git clone https://github.com/cbeuw/Cloak
         git -C Cloak apply /data/src/create_user.patch
         
         go build -C Cloak/cmd/ck-server -o ../../../bin/ck-server
@@ -115,12 +113,15 @@ if [ -z "${VERMETADATA}" ]; then
         VERMETADATA=${VERMETADATA%%.*}
 fi
 
+GIT_USER=${GIT_USER:-git}
+GIT_PASSWORD=${GIT_PASSWORD:-"$(cat ~/.github_token)"}
+
 docker run --rm \
-        -v "$(readlink -f ${SSH_AUTH_SOCK})":/ssh-agent \
-        -e SSH_AUTH_SOCK=/ssh-agent \
-        -e USER_UID=$(id -u) \
+        -e USER_UID="$(id -u)" \
         -e BRANCH="${BRANCH}" \
         -e VERMETADATA="${VERMETADATA}" \
+        -e GIT_USER="${GIT_USER}" \
+        -e GIT_PASSWORD="${GIT_PASSWORD}" \
         -v "${PWD}":"${SHARED_BASE}" \
         golang:"${GOLANG_VER}" "${SHARED_BASE}/build" pkg
 
