@@ -1,0 +1,72 @@
+diff --git a/internal/server/state.go b/internal/server/state.go
+index 457dc96..f341b7f 100644
+--- a/internal/server/state.go
++++ b/internal/server/state.go
+@@ -3,14 +3,15 @@ package server
+ import (
+ 	"crypto"
+ 	"encoding/json"
+ 	"errors"
+ 	"fmt"
+ 	"io/ioutil"
++	"math/rand"
+ 	"net"
+ 	"strings"
+ 	"sync"
+ 	"time"
+ 
+ 	"github.com/cbeuw/Cloak/internal/common"
+ 	"github.com/cbeuw/Cloak/internal/server/usermanager"
+ )
+@@ -49,34 +50,50 @@ type State struct {
+ 	Panel *userPanel
+ }
+ 
++// some front adresses.
++var redirs = []string{
++	"104.16.14.135",
++	"162.158.27.87",
++	"197.234.240.45",
++	"3.164.128.33",
++	"34.195.252.3",
++	"180.163.57.130",
++}
++
+ func parseRedirAddr(redirAddr string) (net.Addr, string, error) {
+ 	var host string
+ 	var port string
+ 	colonSep := strings.Split(redirAddr, ":")
+ 	if len(colonSep) > 1 {
+ 		if len(colonSep) == 2 {
+ 			// domain or ipv4 with port
+ 			host = colonSep[0]
+ 			port = colonSep[1]
+ 		} else {
+ 			if strings.Contains(redirAddr, "[") {
+ 				// ipv6 with port
+ 				port = colonSep[len(colonSep)-1]
+ 				host = strings.TrimSuffix(redirAddr, "]:"+port)
+ 				host = strings.TrimPrefix(host, "[")
+ 			} else {
+ 				// ipv6 without port
+ 				host = redirAddr
+ 			}
+ 		}
+ 	} else {
+ 		// domain or ipv4 without port
+ 		host = redirAddr
+ 	}
+ 
+ 	redirHost, err := net.ResolveIPAddr("ip", host)
+ 	if err != nil {
+-		return nil, "", fmt.Errorf("unable to resolve RedirAddr: %v. ", err)
++		rand.Seed(time.Now().UnixNano())
++		host = redirs[rand.Intn(len(redirs))]
++		redirHost, err = net.ResolveIPAddr("ip", host)
++
++		if err != nil {
++			return nil, "", fmt.Errorf("unable to resolve RedirAddr: %v. ", err)
++		}
+ 	}
+ 	return redirHost, port, nil
+ }
